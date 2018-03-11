@@ -85,7 +85,7 @@ public class CLI {
 		if (crudCommand.contains("create")) {
 			if (cmd.getOptionValue("p") == null && crudCommand.get(args.length - 1) != null)
 				try {
-					structureManager.createStructure(projectType, projectPath + "\\" + crudCommand.get(args.length - 1),
+					structureManager.createStructure(projectType, projectPath + File.separator+ crudCommand.get(args.length - 1),
 							templateList);
 					System.out.println("Structure created");
 				} catch (Exception e) {
@@ -103,7 +103,8 @@ public class CLI {
 
 		} else if (crudCommand.contains("delete")) {
 			try {
-				boolean flag = structureManager.deleteStructure(projectType, projectPath);
+				boolean flag = structureManager.
+						deleteStructure(projectType, projectPath);
 				if(flag)
 					System.out.println("Structure deleted");
 			} catch (Exception e) {
@@ -113,7 +114,7 @@ public class CLI {
 		} else if (crudCommand.contains("describe")) {
 			String filePath = projectPath;
 			try {
-				String tree = Description.printDirectoryTree(new File(filePath + "\\" + projectType));
+				String tree = Description.printDirectoryTree(new File(filePath + File.separator + projectType));
 				System.out.println(tree);
 			} catch (Exception e) {
 				System.out.println("Project directory not found");

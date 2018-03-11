@@ -24,16 +24,16 @@ public class DeleteStructure {
 		boolean flag = false;
 		List<String> projects = FileUtil.findFoldersInDirectory(projectPath);
 		for (String name : projects) {
-			File file = new File(projectPath.toLowerCase() + "\\" + name);
+			File file = new File(projectPath.toLowerCase() + File.separator + name);
 
 			if (name.equalsIgnoreCase(projectType)) {
 				//delete all type structure for location if specific location not provided
-				deleteExistingDirectory((projectPath.toLowerCase() + "\\" + name));
+				deleteExistingDirectory((projectPath.toLowerCase() + File.separator + name));
 				flag =true;
 			} else {
 
-				if (file.isDirectory()) {
-					String updatedPath = projectPath.toLowerCase() + "\\" + name + "\\" + projectType.toLowerCase();
+				if (file.isDirectory() && projectType!=null) {
+					String updatedPath = projectPath.toLowerCase() + File.separator + name + File.separator + projectType.toLowerCase();
 
 					File file2 = new File(updatedPath);
 					if (file2.isDirectory()) {

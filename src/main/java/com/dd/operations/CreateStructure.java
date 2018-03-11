@@ -111,7 +111,7 @@ public class CreateStructure {
 	private void createFile(List<String> addPath) throws IOException {
 		StringBuilder fullPath = new StringBuilder();
 		for (String path : addPath) {
-			fullPath.append(path + "\\");
+			fullPath.append(path + File.separator);
 		}
 		
 			File file = new File(fullPath.toString());
@@ -127,7 +127,7 @@ public class CreateStructure {
 	private void createStructureDirectory(List<String> addPath) {
 		StringBuilder fullPath = new StringBuilder();
 		for (String path : addPath) {
-			fullPath.append(path + "\\");
+			fullPath.append(path + File.separator);
 		}
 		File theDir = new File(fullPath.toString());
 		theDir.mkdir();
