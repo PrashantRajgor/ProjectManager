@@ -1,5 +1,7 @@
 # ProjectManager
+
 Create project structure using CLI in java
+
 
 Download executable present in jar folder inside this project
 Steps to run this project 
@@ -14,4 +16,5 @@ Windows:
 
 2. Open command prompt at batch file location and run commands “pm [options] SUBCMD [NAME]”
 
+#For more detailed other ReadMe is uploaded with image in Jar folder 
 
