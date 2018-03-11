@@ -1,6 +1,6 @@
 - permission: "0751"
   value:
-    maya1:
+    maya:
       - value: chan
       - value: data
       - permission: "0771"

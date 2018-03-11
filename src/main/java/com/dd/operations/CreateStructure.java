@@ -1,7 +1,9 @@
+/*
+ * 
+ */
 package com.dd.operations;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,27 +12,39 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.internet.ParseException;
 
+/**
+ * The Class CreateStructure.
+ */
 public class CreateStructure {
 
-	public void createStructure(String projectType, String projectPath, List<String> templatePath) {
-		Map<String, Boolean> repeated = new HashMap<>();
+	/**
+	 * Creates the structure.
+	 *
+	 * @param projectType the project type
+	 * @param projectPath the project path
+	 * @param templatePath the template path
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws JSONException the JSON exception
+	 * @throws ParseException the parse exception
+	 */
+	public void createStructure(String projectType, String projectPath, List<String> templatePath) throws IOException, JSONException, ParseException {
+
+		Map<String, Boolean> repeated = new HashMap<String, Boolean>();
 
 		if(!FileUtil.createDirectoryIfNotPresent(projectPath)){
 			System.out.println("Exception while creating project structure for "+projectType);
 			return;
 		
 		}
+		//parse each ymls
+		for (String template : templatePath) {
 
-		//projectPath = "D:\\test";
-		//String templatePath1 = "./src/main/resources/TestExample.yml";
-		for (String templatePath1 : templatePath) {
-
-			JSONArray jArray = new JSONArray(FileUtil.convertYamlToJson(templatePath1));
+			JSONArray jArray = new JSONArray(FileUtil.convertYamlToJson(template));
 
 			for (int i = 0; i < jArray.length(); i++) {
 				List<String> addPath = new ArrayList<String>();
@@ -39,19 +53,15 @@ public class CreateStructure {
 				String permission = jObject.getString("permission");
 				JSONObject value = jObject.getJSONObject("value");
 				JSONArray data = value.names();
-				// if project type not match with yml file type name go to next
+				// if project type not match with yml file type name, go to next
 				if(!data.get(0).toString().equalsIgnoreCase(projectType) && projectType!=null){
 					continue;
 				}
 				addPath.add(data.get(0).toString());
+				//if second structure with same type,override existing
 				if (repeated.containsKey(data.get(0).toString())) {
-					try {
-						deleteExistingDirectory(projectPath);
-					} catch (IOException e) {
-						System.out
-								.println("Exception while overriding project structure for " + data.get(0).toString());
-						return;
-					}
+					deleteExistingDirectory(projectPath);
+					
 				}
 				createStructureDirectory(addPath);
 				JSONArray directoryData = value.getJSONArray(data.get(0).toString());
@@ -62,16 +72,17 @@ public class CreateStructure {
 						if (stringData.contains(".") && !stringData.contains("{")) {
 							addPath.add(stringData);
 							createFile(addPath);
+							//remove path to backtrack
 							addPath.remove(stringData);
-						} else if (stringData.contains("{")) {
-							createDummyFun(directoryData.getJSONObject(j).getJSONObject("value"), addPath);
+						} else if (stringData.contains("{")) {// if it has more directory create that structure
+							createInternalStructure(directoryData.getJSONObject(j).getJSONObject("value"), addPath);
 						} else {
 							addPath.add(directoryData.getJSONObject(j).get("value").toString());
 							createStructureDirectory(addPath);
 							addPath.remove(directoryData.getJSONObject(j).get("value"));
 						}
 					} else {
-						createDummyFun(directoryData.getJSONObject(j), addPath);
+						createInternalStructure(directoryData.getJSONObject(j), addPath);
 					}
 				}
 
@@ -80,25 +91,39 @@ public class CreateStructure {
 
 	}
 
+	/**
+	 * Delete existing directory.
+	 *
+	 * @param projectPath the project path
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	private void deleteExistingDirectory(String projectPath) throws IOException {
 
 		FileUtils.deleteDirectory(new File(projectPath));
 	}
 
-	private void createFile(List<String> addPath) {
+	/**
+	 * Creates the file.
+	 *
+	 * @param addPath the add path
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	private void createFile(List<String> addPath) throws IOException {
 		StringBuilder fullPath = new StringBuilder();
 		for (String path : addPath) {
 			fullPath.append(path + "\\");
 		}
-		try {
+		
 			File file = new File(fullPath.toString());
 			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		
 	}
 
+	/**
+	 * Creates the structure directory.
+	 *
+	 * @param addPath the add path
+	 */
 	private void createStructureDirectory(List<String> addPath) {
 		StringBuilder fullPath = new StringBuilder();
 		for (String path : addPath) {
@@ -108,7 +133,14 @@ public class CreateStructure {
 		theDir.mkdir();
 	}
 
-	void createDummyFun(JSONObject value, List<String> addPath) {
+	/**
+	 * Creates the internal structure.
+	 *
+	 * @param value the value
+	 * @param addPath the add path
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	void createInternalStructure(JSONObject value, List<String> addPath) throws IOException {
 		JSONArray data = value.names();
 		addPath.add(data.get(0).toString());
 		createStructureDirectory(addPath);
@@ -122,7 +154,7 @@ public class CreateStructure {
 					createFile(addPath);
 					addPath.remove(stringData);
 				} else if (stringData.contains("{")) {
-					createDummyFun(directoryData.getJSONObject(j).getJSONObject("value"), addPath);
+					createInternalStructure(directoryData.getJSONObject(j).getJSONObject("value"), addPath);
 				} else {
 					addPath.add(directoryData.getJSONObject(j).get("value").toString());
 					createStructureDirectory(addPath);
@@ -135,17 +167,4 @@ public class CreateStructure {
 	}
 
 
-/*	String convertYamlToJson(String yaml) {
-
-		ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
-		Object obj;
-		try {
-			obj = yamlReader.readValue(new FileReader(yaml), Object.class);
-			ObjectMapper jsonWriter = new ObjectMapper();
-			return jsonWriter.writeValueAsString(obj);
-		} catch (IOException e) {
-		}
-		return "";
-	}
-*/
 }

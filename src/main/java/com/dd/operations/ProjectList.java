@@ -1,14 +1,21 @@
 package com.dd.operations;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.ArrayList;
 import java.util.List;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ProjectList.
+ */
 public class ProjectList {
 
+	/**
+	 * Show all projects.
+	 *
+	 * @param projectType the project type
+	 * @param projectPath the project path
+	 */
 	public void showAllProjects(String projectType, String projectPath) {
-		List<String> projects = findFoldersInDirectory(projectPath);
+		List<String> projects = FileUtil.findFoldersInDirectory(projectPath);
 		if(projectType!=null && projects.contains(projectType))
 			System.out.println(projectType);
 		else{
@@ -18,22 +25,4 @@ public class ProjectList {
 		}
 	}
 
-	
-	private List<String> findFoldersInDirectory(String directoryPath) {
-	    File directory = new File(directoryPath);
-		
-	    FileFilter directoryFileFilter = new FileFilter() {
-	        public boolean accept(File file) {
-	            return file.isDirectory();
-	        }
-	    };
-			
-	    File[] directoryListAsFile = directory.listFiles(directoryFileFilter);
-	    List<String> foldersInDirectory = new ArrayList<String>(directoryListAsFile.length);
-	    for (File directoryAsFile : directoryListAsFile) {
-	        foldersInDirectory.add(directoryAsFile.getName());
-	    }
-
-	    return foldersInDirectory;
 	}
-}
