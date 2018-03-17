@@ -1,7 +1,7 @@
 package com.dd.operations.intf;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import org.json.JSONException;
 
@@ -23,7 +23,7 @@ public interface IStructureManager {
 	 * @throws JSONException the JSON exception
 	 * @throws ParseException the parse exception
 	 */
-	void createStructure(String projectType, String projectPath, List<String> templatePath) throws IOException, JSONException, ParseException;
+	void createStructure(String projectType, String projectPath) throws IOException, JSONException, ParseException;
 
 	/**
 	 * Delete structure.
@@ -42,4 +42,6 @@ public interface IStructureManager {
 	 * @param projectPath the project path
 	 */
 	void showAllProjects(String projectType, String projectPath);
+	
+	Set<String> getTypesOfProjects()throws JSONException, ParseException;
 }
